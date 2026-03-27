@@ -9,7 +9,7 @@
     </PropertyGroup>
 
     <PropertyGroup>
-        <Description>A thread-safe singleton for the AngleSharp HtmlParser.</Description>
+        <Description>A thread-safe cache for AngleSharp HtmlParser instances keyed by context type.</Description>
         <Version Condition="'$(BUILD_VERSION)' == ''">4.0.0</Version>
         <Version Condition="'$(BUILD_VERSION)' != ''">$(BUILD_VERSION)</Version>
         <AssemblyName>Soenneker.AngleSharp.Parser</AssemblyName>
@@ -37,6 +37,12 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <Compile Remove="NewFolder\**" />
+      <EmbeddedResource Remove="NewFolder\**" />
+      <None Remove="NewFolder\**" />
+    </ItemGroup>
+
+    <ItemGroup>
         <None Include="..\..\README.md" Pack="true" PackagePath="\" />
         <None Include="..\..\LICENSE" Pack="true" PackagePath="\" />
         <None Include="..\..\icon.png" Pack="true" PackagePath="\" />
@@ -45,6 +51,10 @@
     <ItemGroup>
         <PackageReference Include="AngleSharp" Version="1.4.0" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.5" />
-        <PackageReference Include="Soenneker.Utils.AsyncSingleton" Version="4.0.783" />
+        <PackageReference Include="Soenneker.Dictionaries.SingletonKeys" Version="4.0.64" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Enums\" />
     </ItemGroup>
 </Project>

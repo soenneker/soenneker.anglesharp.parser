@@ -5,7 +5,7 @@ using Soenneker.AngleSharp.Parser.Abstract;
 namespace Soenneker.AngleSharp.Parser.Registrars;
 
 /// <summary>
-/// A thread-safe singleton for the AngleSharp HtmlParser.
+/// Registers the thread-safe AngleSharp parser cache service.
 /// </summary>
 public static class AngleSharpParserRegistrar
 {
