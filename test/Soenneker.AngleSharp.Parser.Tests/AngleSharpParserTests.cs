@@ -1,20 +1,19 @@
 using Soenneker.AngleSharp.Parser.Abstract;
-using Soenneker.Tests.FixturedUnit;
-using Xunit;
+using Soenneker.Tests.HostedUnit;
 
 namespace Soenneker.AngleSharp.Parser.Tests;
 
-[Collection("Collection")]
-public sealed class AngleSharpParserTests : FixturedUnitTest
+[ClassDataSource<Host>(Shared = SharedType.PerTestSession)]
+public sealed class AngleSharpParserTests : HostedUnitTest
 {
     private readonly IAngleSharpParser _util;
 
-    public AngleSharpParserTests(Fixture fixture, ITestOutputHelper output) : base(fixture, output)
+    public AngleSharpParserTests(Host host) : base(host)
     {
         _util = Resolve<IAngleSharpParser>(true);
     }
 
-    [Fact]
+    [Test]
     public void Default()
     {
 
