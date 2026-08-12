@@ -48,7 +48,7 @@
 
     <ItemGroup>
         <PackageReference Include="AngleSharp" Version="1.7.1" />
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.10" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.11" />
         <PackageReference Include="Soenneker.Dictionaries.SingletonKeys" Version="4.0.118" />
     </ItemGroup>
 
