@@ -12,17 +12,17 @@ namespace Soenneker.AngleSharp.Parser.Abstract;
 public interface IAngleSharpParser : IAsyncDisposable, IDisposable
 {
     /// <summary>
-    /// Gets the value.
+    /// Returns the configured HTML Parser used by the anglesharp parser.
     /// </summary>
-    /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>A task containing the result of the operation.</returns>
+    /// <param name="cancellationToken">Token used to cancel the operation.</param>
+    /// <returns>A task whose result is the requested HTML Parser.</returns>
     ValueTask<HtmlParser> Get(CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// Gets the value.
+    /// Returns the configured HTML Parser used by the anglesharp parser.
     /// </summary>
-    /// <param name="contextType">The context type.</param>
-    /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>A task containing the result of the operation.</returns>
+    /// <param name="contextType">AngleSharp browsing context configuration to use.</param>
+    /// <param name="cancellationToken">Token used to cancel the operation.</param>
+    /// <returns>A task whose result is the requested HTML Parser.</returns>
     ValueTask<HtmlParser> Get(AngleSharpContextType contextType, CancellationToken cancellationToken = default);
 }
