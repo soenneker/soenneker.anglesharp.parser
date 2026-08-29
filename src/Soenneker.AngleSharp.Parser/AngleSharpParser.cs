@@ -10,7 +10,7 @@ using Soenneker.AngleSharp.Parser.Enums;
 
 namespace Soenneker.AngleSharp.Parser;
 
-///<inheritdoc cref="IAngleSharpParser"/>
+/// <inheritdoc cref="IAngleSharpParser"/>
 public sealed class AngleSharpParser : IAngleSharpParser
 {
     private readonly SingletonKeyDictionary<AngleSharpContextType, HtmlParser> _instances;
