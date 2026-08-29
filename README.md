@@ -4,42 +4,100 @@
 
 # Soenneker.AngleSharp.Parser
 
-A thread-safe cache of AngleSharp HtmlParser instances keyed by context type.
+A DI-friendly cache of configured AngleSharp `HtmlParser` instances.
 
-## Install
+Instead of constructing parser configuration throughout an application, request one of three named parser contexts. The service creates each context on first use and returns the cached instance on later calls.
+
+## Installation
 
 ```bash
 dotnet add package Soenneker.AngleSharp.Parser
 ```
 
-## Quick start
+## Registration
+
+Use singleton registration when the parser cache should be shared by the application:
 
 ```csharp
 using Soenneker.AngleSharp.Parser.Registrars;
-using Microsoft.Extensions.DependencyInjection;
 
-var services = new ServiceCollection();
-var result = services.AddAngleSharpParserAsSingleton();
+builder.Services.AddAngleSharpParserAsSingleton();
 ```
 
-Adds `IAngleSharpParser` as a singleton service.
+Scoped registration creates an independent cache for each dependency-injection scope:
 
-## What you get
+```csharp
+builder.Services.AddAngleSharpParserAsScoped();
+```
 
-- `IAngleSharpParser` — A thread-safe cache of AngleSharp HtmlParser instances keyed by context type.
-- `AngleSharpParserRegistrar` — Registers the thread-safe AngleSharp parser cache service.
-- `AngleSharpContextType` — Represents the angle sharp context type values.
+Both registrars use `TryAdd`, so an existing `IAngleSharpParser` registration is not replaced.
 
-## API at a glance
+## Parse HTML
 
-| API | What it does | Result / important behavior |
+Inject `IAngleSharpParser`, retrieve the appropriate configuration, and use the returned AngleSharp parser normally:
+
+```csharp
+using AngleSharp.Dom;
+using AngleSharp.Html.Parser;
+using Soenneker.AngleSharp.Parser.Abstract;
+using Soenneker.AngleSharp.Parser.Enums;
+
+public sealed class PageTitleReader
+{
+    private readonly IAngleSharpParser _parsers;
+
+    public PageTitleReader(IAngleSharpParser parsers)
+    {
+        _parsers = parsers;
+    }
+
+    public async ValueTask<string?> Read(
+        string html,
+        CancellationToken cancellationToken)
+    {
+        HtmlParser parser = await _parsers.Get(
+            AngleSharpContextType.Fast,
+            cancellationToken);
+
+        using IDocument document = await parser.ParseDocumentAsync(
+            html,
+            cancellationToken);
+
+        return document.QuerySelector("title")?.TextContent.Trim();
+    }
+}
+```
+
+`Get()` without a context argument is equivalent to `Get(AngleSharpContextType.Default)`.
+
+## Parser contexts
+
+| Context | Configuration | Use it for |
 | --- | --- | --- |
-| `AngleSharpParserRegistrar.AddAngleSharpParserAsSingleton(services)` | Adds `IAngleSharpParser` as a singleton service. | The same service collection, so additional registrations can be chained. |
-| `AngleSharpParserRegistrar.AddAngleSharpParserAsScoped(services)` | Adds `IAngleSharpParser` as a scoped service. | The same service collection, so additional registrations can be chained. |
-| `AngleSharpContextType.Default` | Represents the default value. | Represents the default value. |
-| `AngleSharpContextType.Fast` | Represents the fast value. | Represents the fast value. |
-| `AngleSharpContextType.WithLoader` | Represents the with loader value. | Represents the with loader value. |
+| `Default` | AngleSharp's default `HtmlParser` configuration. | General HTML parsing when no specialized behavior is needed. |
+| `Fast` | Scripting disabled and no resource loader added. | Parsing supplied HTML for scraping, normalization, or querying without external resource loading. |
+| `WithLoader` | Scripting enabled and AngleSharp's default loader configured with resource loading enabled. | Workflows that need a loader-enabled browsing context. |
 
-## Practical notes
+Choose the context deliberately. `WithLoader` permits resource loading through its browsing context, so do not use it with untrusted input in environments where outbound requests must be restricted.
 
-- Dispose instances you own when their scope ends so held resources can be released.
+## Cache and lifetime behavior
+
+The cache is keyed by `AngleSharpContextType`. Within one `IAngleSharpParser` service instance:
+
+- the first request for a context creates its `HtmlParser`;
+- subsequent requests for that context return the same parser instance;
+- requests for different contexts return independently configured instances;
+- concurrent cache initialization is coordinated by the underlying singleton-key dictionary.
+
+The thread-safety guarantee applies to creating and retrieving cached entries. Because callers receive the same mutable `HtmlParser` object for a context, avoid changing its configuration after retrieval and validate concurrent parsing behavior against the AngleSharp version used by your application.
+
+The service implements both `IDisposable` and `IAsyncDisposable`. Let the dependency-injection container dispose registered instances. If you construct `AngleSharpParser` yourself, dispose that service when its cache is no longer needed.
+
+## API
+
+| Method | Purpose |
+| --- | --- |
+| `Get(CancellationToken)` | Returns the cached `Default` parser. |
+| `Get(AngleSharpContextType, CancellationToken)` | Returns the cached parser for the selected context. |
+| `AddAngleSharpParserAsSingleton()` | Registers one application-wide parser cache. |
+| `AddAngleSharpParserAsScoped()` | Registers one parser cache per DI scope. |
