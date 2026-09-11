@@ -47,7 +47,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="AngleSharp" Version="1.8.0" />
+        <PackageReference Include="AngleSharp" Version="1.8.1" />
         <PackageReference Include="Soenneker.Dictionaries.SingletonKeys" Version="4.0.144" />
     </ItemGroup>
 
