@@ -49,7 +49,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="AngleSharp" Version="1.10.2" />
+        <PackageReference Include="AngleSharp" Version="1.10.3" />
         <PackageReference Include="Soenneker.Dictionaries.SingletonKeys" Version="11.0.201" />
     </ItemGroup>
 
