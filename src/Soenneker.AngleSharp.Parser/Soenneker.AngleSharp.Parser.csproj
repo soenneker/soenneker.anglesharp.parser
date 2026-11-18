@@ -50,7 +50,7 @@
 
     <ItemGroup>
         <PackageReference Include="AngleSharp" Version="1.10.4" />
-        <PackageReference Include="Soenneker.Dictionaries.SingletonKeys" Version="11.0.203" />
+        <PackageReference Include="Soenneker.Dictionaries.SingletonKeys" Version="11.0.205" />
     </ItemGroup>
 
     <ItemGroup>
